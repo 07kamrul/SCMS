@@ -110,6 +110,10 @@ class ProjectService:
             data["boundary"] = self._to_boundary(data["boundary"])
         for key, value in data.items():
             setattr(project, key, value)
+        if project.status == ProjectStatus.RUNNING and project.boundary is None:
+            raise ValidationError(
+                "A project cannot be set to running before its site-boundary polygon is drawn."
+            )
         self.db.commit()
         self.db.refresh(project)
         return project

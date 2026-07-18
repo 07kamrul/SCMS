@@ -85,6 +85,30 @@ def test_progress_percent_out_of_range_rejected(client, company, db):
     assert resp.status_code == 422
 
 
+def test_activating_project_without_boundary_is_rejected(client, company, db):
+    project = make_project(db, company=company, name="No Boundary Yet")
+    db.commit()
+    headers = auth_header(client, email="owner@buildco.com", password="password123")
+    resp = client.patch(
+        f"/api/v1/projects/{project.id}", headers=headers, json={"status": "running"}
+    )
+    assert resp.status_code == 422, resp.text
+    assert resp.json()["error"]["code"] == "validation_error"
+
+
+def test_activating_project_with_boundary_succeeds(client, company, db):
+    project = make_project(
+        db, company=company, name="Has Boundary", boundary_geojson=SAMPLE_POLYGON_GEOJSON
+    )
+    db.commit()
+    headers = auth_header(client, email="owner@buildco.com", password="password123")
+    resp = client.patch(
+        f"/api/v1/projects/{project.id}", headers=headers, json={"status": "running"}
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["data"]["status"] == "running"
+
+
 def test_archive_sets_status_archived(client, company, db):
     project = make_project(db, company=company, name="To Archive", status=ProjectStatus.RUNNING)
     db.commit()
