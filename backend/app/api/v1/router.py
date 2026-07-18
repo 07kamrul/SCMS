@@ -13,6 +13,7 @@ from app.api.v1 import (
     progress_reports,
     projects,
     tasks,
+    uploads,
     users,
 )
 
@@ -27,3 +28,4 @@ api_router.include_router(locations.router)
 api_router.include_router(tasks.router)
 api_router.include_router(issues.router)
 api_router.include_router(progress_reports.router)
+api_router.include_router(uploads.router)
