@@ -21,8 +21,10 @@ from app.repositories.task_repo import TaskCommentRepository, TaskPhotoRepositor
 from app.repositories.user_repo import UserRepository
 from app.schemas.common import PaginationParams
 from app.schemas.task import TaskCommentCreate, TaskCreate, TaskPhotoCreate, TaskUpdate
+from app.services.notification_service import NotificationService
 
 _APPROVAL_GATED_STATUSES = {TaskStatus.APPROVED, TaskStatus.REJECTED, TaskStatus.COMPLETED}
+_ATTENTION_STATUSES = {TaskStatus.BLOCKED, TaskStatus.REJECTED}
 
 
 class TaskService:
@@ -34,6 +36,7 @@ class TaskService:
         self.projects = ProjectRepository(db)
         self.assignments = AssignmentRepository(db)
         self.users = UserRepository(db)
+        self.notifications = NotificationService(db)
 
     def create(
         self, *, company_id: uuid.UUID, created_by_user_id: uuid.UUID, payload: TaskCreate
@@ -57,6 +60,15 @@ class TaskService:
         self.tasks.add(task)
         self.db.commit()
         self.db.refresh(task)
+        if task.assigned_to_user_id is not None:
+            self.notifications.create_and_dispatch(
+                company_id=company_id,
+                user_id=task.assigned_to_user_id,
+                type="task.assigned",
+                title="New task assigned",
+                body=task.title,
+                entity_id=task.id,
+            )
         return task
 
     def _visible_project_ids(
@@ -156,10 +168,26 @@ class TaskService:
             if new_assignee is not None and self.users.get_for_company(new_assignee, company_id) is None:
                 raise NotFoundError("Assignee not found.")
 
+        old_status = task.status
         for key, value in data.items():
             setattr(task, key, value)
         self.db.commit()
         self.db.refresh(task)
+
+        if (
+            task.assigned_to_user_id is not None
+            and task.status != old_status
+            and task.status in _ATTENTION_STATUSES
+        ):
+            self.notifications.create_and_dispatch(
+                company_id=company_id,
+                user_id=task.assigned_to_user_id,
+                type="task.status_changed",
+                title=f"Task {task.status.value}",
+                body=task.title,
+                entity_id=task.id,
+                data={"status": task.status.value},
+            )
         return task
 
     def add_comment(

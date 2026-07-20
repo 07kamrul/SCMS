@@ -7,11 +7,13 @@ from app.db.base import Base
 from app.models.activity_log import ActivityLog
 from app.models.assignment import Assignment
 from app.models.company import Company, CompanySettings
+from app.models.device_token import DeviceToken
 from app.models.issue import Issue
 from app.models.issue_comment import IssueComment
 from app.models.issue_photo import IssuePhoto
 from app.models.issue_status_history import IssueStatusHistory
 from app.models.location_point import LocationPoint
+from app.models.notification import Notification
 from app.models.progress_photo import ProgressPhoto
 from app.models.progress_report import DailyProgressReport
 from app.models.progress_report_stage_entry import ProgressReportStageEntry
@@ -29,11 +31,13 @@ __all__ = [
     "Company",
     "CompanySettings",
     "DailyProgressReport",
+    "DeviceToken",
     "Issue",
     "IssueComment",
     "IssuePhoto",
     "IssueStatusHistory",
     "LocationPoint",
+    "Notification",
     "ProgressPhoto",
     "ProgressReportStageEntry",
     "Project",

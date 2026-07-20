@@ -29,6 +29,7 @@ from app.repositories.project_repo import ProjectRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.common import PaginationParams
 from app.schemas.issue import IssueCommentCreate, IssueCreate, IssuePhotoCreate, IssueUpdate
+from app.services.notification_service import NotificationService
 
 _RESOLVED_LIKE_STATUSES = {IssueStatus.RESOLVED, IssueStatus.CLOSED}
 
@@ -43,6 +44,7 @@ class IssueService:
         self.projects = ProjectRepository(db)
         self.assignments = AssignmentRepository(db)
         self.users = UserRepository(db)
+        self.notifications = NotificationService(db)
 
     def create(
         self, *, company_id: uuid.UUID, reported_by_user_id: uuid.UUID, payload: IssueCreate
@@ -75,6 +77,15 @@ class IssueService:
         )
         self.db.commit()
         self.db.refresh(issue)
+        if issue.assigned_to_user_id is not None:
+            self.notifications.create_and_dispatch(
+                company_id=company_id,
+                user_id=issue.assigned_to_user_id,
+                type="issue.created",
+                title="New issue reported",
+                body=issue.title,
+                entity_id=issue.id,
+            )
         return issue
 
     def _visible_project_ids(
@@ -188,6 +199,19 @@ class IssueService:
             setattr(issue, key, value)
         self.db.commit()
         self.db.refresh(issue)
+
+        if new_status is not None and new_status != old_status:
+            notify_user_id = issue.assigned_to_user_id or issue.reported_by_user_id
+            if notify_user_id is not None:
+                self.notifications.create_and_dispatch(
+                    company_id=company_id,
+                    user_id=notify_user_id,
+                    type="issue.status_changed",
+                    title=f"Issue {issue.status.value}",
+                    body=issue.title,
+                    entity_id=issue.id,
+                    data={"status": issue.status.value},
+                )
         return issue
 
     def list_history(self, *, issue: Issue) -> list[IssueStatusHistory]:

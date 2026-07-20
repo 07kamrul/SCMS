@@ -7,9 +7,11 @@ from app.api.v1 import (
     assignments,
     auth,
     companies,
+    dashboard,
     health,
     issues,
     locations,
+    notifications,
     progress_reports,
     projects,
     tasks,
@@ -29,3 +31,5 @@ api_router.include_router(tasks.router)
 api_router.include_router(issues.router)
 api_router.include_router(progress_reports.router)
 api_router.include_router(uploads.router)
+api_router.include_router(notifications.router)
+api_router.include_router(dashboard.router)

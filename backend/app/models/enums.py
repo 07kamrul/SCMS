@@ -86,6 +86,11 @@ class IssuePriority(str, enum.Enum):
     CRITICAL = "critical"
 
 
+class DevicePlatform(str, enum.Enum):
+    ANDROID = "android"
+    IOS = "ios"
+
+
 class IssueCategory(str, enum.Enum):
     WORK_DELAY = "work_delay"
     DESIGN_PROBLEM = "design_problem"

@@ -1,6 +1,7 @@
 """Small helpers to build companies, users, and projects in tests."""
 from __future__ import annotations
 
+import uuid
 from datetime import date as date_
 from datetime import datetime, timezone
 from typing import Any
@@ -24,6 +25,7 @@ from app.models.enums import (
 from app.models.issue import Issue
 from app.models.issue_status_history import IssueStatusHistory
 from app.models.location_point import LocationPoint
+from app.models.notification import Notification
 from app.models.progress_report import DailyProgressReport
 from app.models.progress_report_stage_entry import ProgressReportStageEntry
 from app.models.project import Project
@@ -261,6 +263,38 @@ def make_progress_report(
         )
     db.flush()
     return report
+
+
+def make_notification(
+    db: Session,
+    *,
+    company: Company,
+    user: User,
+    type: str,
+    title: str,
+    body: str | None = None,
+    data: dict[str, Any] | None = None,
+    entity_id: uuid.UUID | None = None,
+    read_at: datetime | None = None,
+    created_at: datetime | None = None,
+) -> Notification:
+    notification = Notification(
+        company_id=company.id,
+        user_id=user.id,
+        type=type,
+        title=title,
+        body=body,
+        data=data,
+        entity_id=entity_id,
+        read_at=read_at,
+    )
+    if created_at is not None:
+        # Override the server_default so cooldown/dedup-window tests can
+        # backdate a notification outside the 15-minute window.
+        notification.created_at = created_at
+    db.add(notification)
+    db.flush()
+    return notification
 
 
 def auth_header(client, *, email: str, password: str) -> dict[str, str]:
