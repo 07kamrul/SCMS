@@ -29,6 +29,7 @@ progress and site photos, and role-based dashboards. **Not an ERP.**
 cd backend
 cp .env.example .env          # then set JWT_SECRET_KEY to a real random value
 cd ..
+cp .env.example .env          # optional: only needed if the default host ports below clash
 docker compose up --build     # starts db (PostGIS), redis, minio, backend
 ```
 
@@ -38,9 +39,14 @@ The backend container runs `alembic upgrade head` on start. Then seed demo data:
 docker compose exec backend python seed.py
 ```
 
-- API docs: http://localhost:8000/docs
-- Health:   http://localhost:8000/api/v1/health
-- MinIO console: http://localhost:9001
+- API docs: http://localhost:18000/docs
+- Health:   http://localhost:18000/api/v1/health
+- MinIO console: http://localhost:19001
+
+Host ports default to `18000` (backend), `15432` (Postgres), `16379` (Redis),
+`19000`/`19001` (MinIO API/console) — chosen to avoid colliding with other
+projects' default ports. Override any of them via `SCMS_*_PORT` in the
+repo-root `.env` (see `.env.example`).
 
 ## Local development (without Docker for the app)
 
@@ -65,7 +71,7 @@ Tests need a disposable PostgreSQL database (PG-specific column types are used).
 ```bash
 cd backend
 createdb scfms_test 2>/dev/null || true
-export TEST_DATABASE_URL="postgresql+psycopg://scfms:scfms_dev_password@localhost:5432/scfms_test"
+export TEST_DATABASE_URL="postgresql+psycopg://scfms:scfms_dev_password@localhost:15432/scfms_test"
 pytest
 ```
 
