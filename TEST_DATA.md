@@ -1,12 +1,12 @@
 # Test Data & Testing Guide
 
 Test users, seeded demo data, and step-by-step instructions for manually
-testing SCMS (all 5 roles) via the API docs UI or `curl`.
+testing SCFMS (all 5 roles) via the API docs UI or `curl`.
 
 ## 1. One-time setup
 
 ```bash
-cd /root/opt/SCMS
+cd /root/opt/SCFMS
 cp .env.example .env                       # first time only
 cp backend/.env.example backend/.env       # first time only; set a real JWT_SECRET_KEY
 docker compose up -d                       # starts db, redis, minio, backend

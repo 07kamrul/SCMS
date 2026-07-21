@@ -45,7 +45,7 @@ docker compose exec backend python seed.py
 
 Host ports default to `18000` (backend), `15432` (Postgres), `16379` (Redis),
 `19000`/`19001` (MinIO API/console) — chosen to avoid colliding with other
-projects' default ports. Override any of them via `SCMS_*_PORT` in the
+projects' default ports. Override any of them via `SCFMS_*_PORT` in the
 repo-root `.env` (see `.env.example`).
 
 ## Local development (without Docker for the app)

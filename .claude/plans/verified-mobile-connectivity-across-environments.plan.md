@@ -5,7 +5,7 @@
 **Complexity**: Medium
 
 ## Summary
-`ApiClient.defaultBaseUrl` (`mobile/lib/core/network/api_client.dart:64-65`) is hardcoded to `http://10.0.2.2:8000/api/v1` — the Android-emulator-only loopback alias — with no way to point the app at a staging or production backend without editing source. This milestone introduces compile-time environment config (`--dart-define`), wires it through DI instead of the hardcoded constant, and verifies CORS/network reachability end-to-end for local, staging, and production. Depends on Milestone 1 only insofar as the "local" default should match whatever host port that milestone lands on (`SCMS_BACKEND_PORT`, default `18000`) — otherwise independent.
+`ApiClient.defaultBaseUrl` (`mobile/lib/core/network/api_client.dart:64-65`) is hardcoded to `http://10.0.2.2:8000/api/v1` — the Android-emulator-only loopback alias — with no way to point the app at a staging or production backend without editing source. This milestone introduces compile-time environment config (`--dart-define`), wires it through DI instead of the hardcoded constant, and verifies CORS/network reachability end-to-end for local, staging, and production. Depends on Milestone 1 only insofar as the "local" default should match whatever host port that milestone lands on (`SCFMS_BACKEND_PORT`, default `18000`) — otherwise independent.
 
 ## Patterns to Mirror
 | Category | Source | Pattern |
@@ -43,7 +43,7 @@
 - **Validate**: `flutter test` — existing DI-dependent tests still pass; `flutter run` (no flags) behaves identically to before (still hits the emulator alias)
 
 ### Task 4: Per-environment dart-define files
-- **Action**: Create `mobile/env/local.json` (`{"API_BASE_URL": "http://10.0.2.2:<SCMS_BACKEND_PORT default>/api/v1"}`), `staging.json`, and `production.json` (both `https://` placeholders — real hostnames are `TBD`, see Open Questions in the PRD)
+- **Action**: Create `mobile/env/local.json` (`{"API_BASE_URL": "http://10.0.2.2:<SCFMS_BACKEND_PORT default>/api/v1"}`), `staging.json`, and `production.json` (both `https://` placeholders — real hostnames are `TBD`, see Open Questions in the PRD)
 - **Mirror**: No existing pattern in this repo; follows Flutter's documented `--dart-define-from-file` convention
 - **Validate**: `flutter run --dart-define-from-file=mobile/env/staging.json` launches without a dart-define parse error (placeholder host will fail to connect until Open Question 2 in the PRD is resolved — that's expected and documented, not a bug in this milestone)
 

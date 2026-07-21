@@ -1,6 +1,6 @@
 # mobile
 
-SCMS mobile app (Flutter).
+SCFMS mobile app (Flutter).
 
 ## Environment configuration
 
@@ -16,7 +16,7 @@ flutter run --dart-define-from-file=env/production.json    # production (host is
 
 Running `flutter run` with no flags falls back to the local emulator alias
 (`http://10.0.2.2:18000/api/v1`), matching `env/local.json` and the backend's
-default `SCMS_BACKEND_PORT` (see the repo-root `.env.example`).
+default `SCFMS_BACKEND_PORT` (see the repo-root `.env.example`).
 
 ## Getting Started
 

@@ -1,4 +1,4 @@
-name: scms
+name: scfms
 
 services:
   db:
@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scfms_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-scfms}
     ports:
-      - "${SCMS_DB_PORT:-15432}:5432"
+      - "${SCFMS_DB_PORT:-15432}:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,7 +21,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "${SCMS_REDIS_PORT:-16379}:6379"
+      - "${SCFMS_REDIS_PORT:-16379}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -36,8 +36,8 @@ services:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY:-scfms_minio}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-scfms_minio_password}
     ports:
-      - "${SCMS_MINIO_PORT:-19000}:9000"
-      - "${SCMS_MINIO_CONSOLE_PORT:-19001}:9001"
+      - "${SCFMS_MINIO_PORT:-19000}:9000"
+      - "${SCFMS_MINIO_CONSOLE_PORT:-19001}:9001"
     volumes:
       - minio_data:/data
     healthcheck:
@@ -59,7 +59,7 @@ services:
       minio:
         condition: service_started
     ports:
-      - "${SCMS_BACKEND_PORT:-18000}:8000"
+      - "${SCFMS_BACKEND_PORT:-18000}:8000"
     restart: unless-stopped
 
 volumes:

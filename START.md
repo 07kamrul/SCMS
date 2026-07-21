@@ -5,7 +5,7 @@ Quick instructions to run this project. For full details see [README.md](README.
 ## Backend (Docker — recommended)
 
 ```bash
-cd /root/opt/SCMS
+cd /root/opt/SCFMS
 cp .env.example .env                  # first time only
 cp backend/.env.example backend/.env  # first time only; set a real JWT_SECRET_KEY
 docker compose up -d                  # starts db, redis, minio, backend
