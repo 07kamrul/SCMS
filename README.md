@@ -66,7 +66,11 @@ uvicorn app.main:app --reload
 
 ## Running tests
 
-Tests need a disposable PostgreSQL database (PG-specific column types are used).
+Tests use the **same PostgreSQL server/container** as the app (the `db`
+service in `docker-compose.yml`) — no separate database infrastructure is
+spun up. They run against a separate *database name* (`scfms_test`) on that
+same server so pytest's `drop_all`/`create_all` schema reset never touches
+your seeded demo data in the `scfms` database.
 
 ```bash
 cd backend

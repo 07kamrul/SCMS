@@ -134,6 +134,14 @@ curl -s -X POST http://localhost:18000/api/v1/auth/change-password \
 
 ## 8. Automated tests
 
+Automated tests use the **same PostgreSQL server/container** started by
+`docker compose up -d` above — there's no second database service to run.
+They connect to a separate *database name* (`scfms_test`) on that same
+server, since the test suite drops and recreates the whole schema each run
+(`Base.metadata.drop_all`/`create_all` in `backend/tests/conftest.py`) — that
+reset must not run against the `scfms` database holding your seeded demo
+data.
+
 ```bash
 cd backend
 createdb scfms_test 2>/dev/null || true

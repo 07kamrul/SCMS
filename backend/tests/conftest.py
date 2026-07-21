@@ -1,10 +1,13 @@
 """Pytest fixtures.
 
 Tests require a PostgreSQL database (the models use PG-specific types: UUID,
-JSONB, ENUM). Point TEST_DATABASE_URL at a disposable database; the schema is
-created via metadata.create_all and dropped at the end of the session.
+JSONB, ENUM) and reuse the same Postgres server/container as the app (the
+`db` service in docker-compose.yml) — no separate database infrastructure is
+needed. Point TEST_DATABASE_URL at a disposable database *name* on that
+server; the schema is created via metadata.create_all and dropped at the end
+of the session, so it must not point at the app's own `scfms` database.
 
-    export TEST_DATABASE_URL="postgresql+psycopg://scfms:scfms@localhost:5432/scfms_test"
+    export TEST_DATABASE_URL="postgresql+psycopg://scfms:scfms_dev_password@localhost:15432/scfms_test"
 """
 from __future__ import annotations
 
@@ -41,7 +44,7 @@ from app.models import (  # noqa: F401 register models
 
 TEST_DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL",
-    "postgresql+psycopg://scfms:scfms_dev_password@localhost:5432/scfms_test",
+    "postgresql+psycopg://scfms:scfms_dev_password@localhost:15432/scfms_test",
 )
 
 engine = create_engine(TEST_DATABASE_URL, poolclass=None, future=True)
